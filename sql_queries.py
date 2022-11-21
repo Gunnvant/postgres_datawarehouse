@@ -6,12 +6,12 @@ CREATE TABLE IF NOT EXISTS songplays (
 songplay_id SERIAL PRIMARY KEY,
 start_time TIMESTAMP NOT NULL, 
 user_id INTEGER NOT NULL, 
-level VARCHAR(50), 
+level VARCHAR(50) NOT NULL, 
 song_id VARCHAR(50), 
 artist_id VARCHAR(50), 
-session_id INTEGER, 
-location VARCHAR(50), 
-user_agent VARCHAR(150)
+session_id INTEGER NOT NULL, 
+location VARCHAR(50) NOT NULL, 
+user_agent VARCHAR(150) NOT NULL
 );
 
 """)
@@ -69,7 +69,7 @@ ON CONFLICT(songplay_id) DO NOTHING;
 
 song_table_insert = ("""
 INSERT INTO songs (song_id,title,artist_id,year,duration) VALUES (%s,%s,%s,%s,%s)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (song_id) DO NOTHING;
 """)
 
 artist_table_insert = ("""
@@ -80,7 +80,9 @@ ON CONFLICT DO NOTHING;
 user_table_insert = ("""
 INSERT INTO USERS (user_id,first_name,last_name,gender,level)
 VALUES (%s,%s,%s,%s,%s)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (user_id) DO UPDATE
+SET level = excluded.level
+;
 """)
 
 time_table_insert = ("""
